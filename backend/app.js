@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 
 // Import routes
 const authRoutes = require('./routes/authRoutes');
+const loanRoutes = require('./routes/loanRoutes');
 
 
 const app = express();
@@ -16,6 +17,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use("/api/loans", require("./routes/loanRoutes"));
 
 // Root endpoint
 app.get('/', (req, res) => res.send('LoanDesk API is running...'));
