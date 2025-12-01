@@ -1,28 +1,46 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
-const Customer = require('./customer');
 const LoanType = require('./loanType');
 
 const Loan = sequelize.define('Loan', {
-  id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+  id: { 
+    type: DataTypes.INTEGER, 
+    autoIncrement: true, 
+    primaryKey: true 
+  },
 
-  principalAmount: { type: DataTypes.DECIMAL(10,2), allowNull: false },
-  interestRate: { type: DataTypes.DECIMAL(5,2), allowNull: false },
+  // Loan name
+  name: {
+    type: DataTypes.STRING(150),
+    allowNull: false
+  },
 
-  startDate: { type: DataTypes.DATEONLY },
-  dueDate: { type: DataTypes.DATEONLY },
+  // Loan description
+  description: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
 
-  status: {
-    type: DataTypes.ENUM('pending', 'approved', 'repaid', 'defaulted'),
-    defaultValue: 'pending'
+  // Base amount for this loan template
+  principalAmount: { 
+    type: DataTypes.DECIMAL(10,2), 
+    allowNull: false 
+  },
+
+  // Track when the loan template was created
+  createdDate: { 
+    type: DataTypes.DATEONLY, 
+    allowNull: false, 
+    defaultValue: DataTypes.NOW // default to current date
   }
+
 }, {
   tableName: 'loans',
-  timestamps: true,
+  timestamps: true // keeps createdAt and updatedAt
 });
 
 // Associations
-Loan.belongsTo(Customer, { foreignKey: 'customerId', onDelete: 'CASCADE' });
-Loan.belongsTo(LoanType, { foreignKey: 'typeId', onDelete: 'SET NULL' });
+Loan.belongsTo(LoanType, { foreignKey: 'typeId', allowNull: false, onDelete: 'RESTRICT' });
+LoanType.hasMany(Loan, { foreignKey: 'typeId' });
 
 module.exports = Loan;
